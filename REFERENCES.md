@@ -1,42 +1,53 @@
-# مراجع اليوم الثالث | Day 3 References
+# مراجع اليوم الرابع | Day 4 References
 
-**آخر تحقق:** 27 أغسطس 2026.
-الروابط أدناه مصادر أولية أو وثائق رسمية. أرقام نتائج المتدرب لا تؤخذ منها؛ تُقاس داخل Colab وتوسم حسب مصدرها.
+**آخر تحقق | Last verified:** 27 August 2026
 
-## CAMeL Tools والعربية
+المصادر هنا رسمية/أولية. لا تُستخدم الأرقام المنشورة كبديل للقياس على Colab الخاص بالمتدرب.
 
-- [CAMeL Tools 1.6.0 documentation](https://camel-tools.readthedocs.io/en/latest/)
-- [CAMeL Tools normalisation API](https://camel-tools.readthedocs.io/en/latest/api/utils/normalize.html)
-- [CAMeL Tools dediacritisation API](https://camel-tools.readthedocs.io/en/latest/api/utils/dediac.html)
-- [CAMeL Tools dialect identification API](https://camel-tools.readthedocs.io/en/latest/api/dialectid.html)
-- [CAMeL Tools package 1.6.0 on PyPI](https://pypi.org/project/camel-tools/1.6.0/)
-- [CAMeL Tools paper — ACL Anthology](https://aclanthology.org/2020.lrec-1.868/)
-- [CAMeLBERT-Mix official model card](https://huggingface.co/CAMeL-Lab/bert-base-arabic-camelbert-mix)
-- [CAMeLBERT-DA official model card](https://huggingface.co/CAMeL-Lab/bert-base-arabic-camelbert-da)
-- [AraBERT v0.2 official model card](https://huggingface.co/aubmindlab/bert-base-arabertv02)
+## القياس والمدخلات
 
-## Sentence embeddings والبحث
+- [PyTorch `inference_mode`](https://docs.pytorch.org/docs/stable/generated/torch.autograd.grad_mode.inference_mode.html) — إيقاف overhead المرتبط بـautograd أثناء الاستدلال؛ لا يغني عن `model.eval()`.
+- [Transformers: Padding and truncation](https://huggingface.co/docs/transformers/en/pad_truncation) — `padding`, `truncation`, و`max_length`.
+- [Python `time.perf_counter_ns`](https://docs.python.org/3/library/time.html#time.perf_counter_ns) — ساعة عالية الدقة لقياس مدد قصيرة.
+- [psutil process memory](https://psutil.readthedocs.io/en/latest/#psutil.Process.memory_info) — RSS للعملية؛ قياس تقريبي يجب وصف حدوده.
 
-- [Sentence Transformer usage documentation](https://sbert.net/docs/sentence_transformer/usage/usage.html)
-- [Cross-encoder usage and top-k re-ranking](https://sbert.net/docs/cross_encoder/usage/usage.html)
-- [Sentence Transformers 6.0.0 on PyPI](https://pypi.org/project/sentence-transformers/6.0.0/)
-- [Multilingual MiniLM official model card](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2)
-- [Multilingual mMARCO cross-encoder model card](https://huggingface.co/cross-encoder/mmarco-mMiniLMv2-L12-H384-v1)
-- [Sentence-BERT paper — ACL Anthology](https://aclanthology.org/D19-1410/)
-- [Multilingual sentence embeddings paper — ACL Anthology](https://aclanthology.org/2020.emnlp-main.365/)
+## ONNX وONNX Runtime
 
-## FAISS والتقييم
+- [ONNX overview](https://onnx.ai/onnx/intro/) — صيغة graph المفتوحة ومبادئها.
+- [PyTorch ONNX exporter](https://docs.pytorch.org/docs/stable/onnx.html) — التصدير من PyTorch.
+- [ONNX model checker](https://onnx.ai/onnx/api/checker.html) — التحقق البنيوي من model graph.
+- [ONNX Runtime Python quickstart](https://onnxruntime.ai/docs/get-started/with-python.html) — إنشاء جلسة inference.
+- [ONNX Runtime quantisation](https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html) — dynamic/static quantisation واختيار الطريقة؛ توصي الصفحة عمومًا بـdynamic quantisation للمحولات مع ضرورة القياس.
+- [Hugging Face Optimum ONNX](https://huggingface.co/docs/optimum-onnx/index) — مسار اختياري رسمي للتصدير والتحسين.
+- [Optimum ONNX quantisation guide](https://huggingface.co/docs/optimum-onnx/onnxruntime/usage_guides/quantization) — API الحزمة المنفصلة الحالية.
 
-- [FAISS official repository](https://github.com/facebookresearch/faiss)
-- [FAISS metric and cosine guidance](https://github.com/facebookresearch/faiss/wiki/MetricType-and-distances)
-- [FAISS CPU 1.15.0 on PyPI](https://pypi.org/project/faiss-cpu/1.15.0/)
-- [FAISS research paper](https://arxiv.org/abs/1702.08734)
-- [scikit-learn F1 score documentation](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html)
-- [scikit-learn resampling utility](https://scikit-learn.org/stable/modules/generated/sklearn.utils.resample.html)
+## FastAPI والاختبار
 
-## حدود الاستخدام
+- [FastAPI request body](https://fastapi.tiangolo.com/tutorial/body/) — نماذج Pydantic والتحقق.
+- [FastAPI testing with TestClient](https://fastapi.tiangolo.com/tutorial/testing/) — نمط اختبار HTTP المباشر.
+- [Starlette TestClient](https://www.starlette.io/testclient/) — المرجع الحالي لاستخدام TestClient المبني على HTTPX2.
+- [FastAPI lifespan testing](https://fastapi.tiangolo.com/advanced/testing-events/) — تشغيل startup/shutdown عند الاختبار.
+- [Pydantic fields](https://docs.pydantic.dev/latest/concepts/fields/) — قيود الحقول والعقود.
 
-- Model cards تصف التدريب والاستخدام المقصود؛ لا تضمن جودة على بياناتك.
-- dialect labels في عينة الدورة مصطنعة/يدوية وليست مخرجات model.
-- أي مقارنة جودة أو latency في مشروع المتدرب تحتاج التشغيل والبيئة والبيانات والنسخ.
-- راجع الترخيص عند استبدال أي checkpoint أو dataset.
+## GitHub release
+
+- [About releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)
+- [Managing releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
+
+## إصدارات Core المثبتة
+
+ملف [`requirements-day4.txt`](../requirements-day4.txt) هو عقد المختبر المراجع في التاريخ أعلاه:
+
+- Transformers 5.15.1 وTokenizers 0.22.2.
+- ONNX 1.22.0.
+- ONNX Runtime 1.29.0 (CPU).
+- FastAPI 0.141.1 وHTTPX2 2.12.0.
+- psutil 7.2.2.
+
+تستخدم بيئة Colab المرجعية NumPy وPyTorch المثبتين مسبقًا. لا تثبت `onnxruntime` و`onnxruntime-gpu` معًا في Core. حزمة `optimum-onnx` 0.1.0 خيار Explore منفصل وليست لازمة لدفتر 08.
+
+## Checkpoint مسار Systems Smoke
+
+- [`google/bert_uncased_L-2_H-128_A-2` model card](https://huggingface.co/google/bert_uncased_L-2_H-128_A-2) — BERT صغير (L=2, H=128)، English-only، Apache-2.0. يستخدم مع tokenizer من المصدر نفسه لفحص البنية التقنية بسرعة، ولا يمثل جودة بيان العربية/الإنجليزية.
+
+المشروع النهائي يعيد القياس على artefact المتدرب متعدد اللغات. لا تنسب إلى checkpoint الصغير قدرة عربية أو جودة مهمة لم تُقَس.
