@@ -1,114 +1,115 @@
-# اليوم الأول — من النص إلى Tensor  
-# Day 1 — From Text to Tensor
+# اليوم الثاني — اجعل النموذج متخصصًا
+# Day 2 — Make the Model Yours
 
 **إعداد وتقديم | Prepared and delivered by:** ميعاد المري · Meaad Al-Marri  
 **المسار:** رحلة تعلم تطبيقية · **البيئة:** Google Colab Free + GitHub
 
+> **السؤال المحوري:** كيف نحول مشفرًا لغويًا عامًا إلى ثلاثة نماذج تحل مهامًا محددة، من دون تسرب بيانات أو أرقام مضللة؟
+>
+> **Driving question:** How do we adapt a general language encoder to three tasks without leakage or misleading metrics?
+
 <!-- BAYAN_YOUTUBE_START -->
 ## فيديوهات هذا اليوم | Videos for this day
 
-[▶ افتح فيديوهات اليوم 1 حسب الموضوع · Open Day 1 video companions](VIDEOS.md)
+[▶ افتح فيديوهات اليوم 2 حسب الموضوع · Open Day 2 video companions](VIDEOS.md)
 
 توجد أزرار المشاهدة كذلك داخل الدروس التفصيلية في موضع الموضوع. · Direct video buttons also appear in the related detailed lessons.
 <!-- BAYAN_YOUTUBE_END -->
 
-## سؤال اليوم | Driving question
+## قبل البدء
 
-> كيف تتحول جملة مثل «الخدمة ممتازة» إلى مصفوفات يستطيع Transformer معالجتها، وما الذي قد يفسد في الطريق؟
+يجب أن تكون بوابة اليوم الأول A مكتملة:
 
-اليوم لا نحفظ أسماء مكتبات فقط؛ سنبني المسار كاملًا ونفحص كل انتقال:
+- preprocessing وPII masking يعملان.
+- قرار tokenizer موثق.
+- دفترا اليوم الأول يصلان إلى PASS.
+- ملفات المشروع محفوظة في GitHub.
 
-```mermaid
-flowchart LR
-    A["نص خام"] --> B["نسخة عرض + حماية"]
-    B --> C["تطبيع معلن"]
-    C --> D["Tokens + IDs"]
-    D --> E["Embeddings"]
-    E --> F["Attention"]
-    F --> G["Encoder output"]
-```
+إذا لم تكتمل، استخدم [نقطة استعادة اليوم الأول](../day-01/04-labs-checkpoint.md) قبل بدء التدريب.
 
-**English:** We follow a bilingual sentence from raw text to protected model text, tokens, IDs, embeddings, self-attention, and an encoder representation.
+## نواتج اليوم | Outcomes
 
-## بنهاية اليوم ستتمكن من
+بنهاية اليوم تستطيع:
 
-1. فحص Unicode دون إفساد العربية.
-2. فصل نسخة العرض عن نسخة النموذج.
-3. تطبيق masking وnormalisation وتقسيم الجمل بـspaCy بقرارات صريحة.
-4. تفسير token وsubword وspecial token.
-5. قياس token fertility وخطر truncation.
-6. شرح الفرق بين token ID وembedding.
-7. حساب scaled dot-product attention وفحص shapes.
-8. رسم Transformer encoder block وشرح دور كل جزء.
-9. تسليم بوابة بيان A باختبارات خضراء وقرار tokenizer.
+1. تفسير الفرق بين pretraining وfine-tuning وtask head.
+2. بناء TF-IDF baseline قبل Transformer.
+3. تجهيز train/validation/frozen-test مع منع تداخل `group_id`.
+4. تنفيذ ضبط فعلي لنموذج BERT متعدد اللغات لتصنيف الموضوع، ثم إعادة استخدام العقد لرأس sentiment المستقل في المشروع.
+5. محاذاة BIO labels مع subwords باستخدام `word_ids()` و`-100`.
+6. تجهيز وتدريب نموذج NER وقياسه على مستوى الكيان.
+7. تجهيز extractive QA واختيار span صالح أو إرجاع no-answer.
+8. إكمال Gate B في مشروع بيان وحفظ الأدلة في GitHub.
+
+## قاموس اليوم | Day glossary
+
+[افتح قاموس اليوم الثاني](GLOSSARY.md) واتركه في تبويب مستقل. يغطي Fine-tuning والتقسيم والمقاييس وNER ومحاذاة BIO وExtractive QA واختيار النموذج، مع النطق والتعريف الإنجليزي والشرح العربي ومثال لكل مصطلح. يمكن الرجوع كذلك إلى [قاموس الدورة الكامل](../docs/glossary/README.md).
 
 ## رحلة اليوم | Learning journey
 
 | English topic | الموضوع والشرح بالعربية |
 |---|---|
-| **The Bayan problem** — Turn Arabic and English feedback into an inspectable analysis. Distinguish a teaching prototype from a service that makes real decisions. | **مشكلة بيان** — نحوّل ملاحظات عربية وإنجليزية إلى تحليل يمكن فحصه. نحدد المستفيد وما ينتجه المشروع، ونفصل النموذج التعليمي عن خدمة تتخذ قرارات حقيقية. |
-| **Text, Unicode and privacy** — Inspect text encoding, keep a safe display copy and create a model copy with documented masking and normalisation. | **النص وUnicode والخصوصية** — نفحص ترميز النص، ونحتفظ بنسخة عرض آمنة، وننشئ نسخة للنموذج مع إخفاء المعرّفات وتوثيق التطبيع. لا ننشر نصًا شخصيًا خامًا. |
-| **Tokens and embeddings** — Compare words and subwords; measure fragmentation and truncation. Token IDs are vocabulary positions, while embeddings are learned vectors. | **الترميز والتضمينات** — نميّز الكلمات والوحدات الجزئية ونقيس التجزئة والقطع. رقم الرمز موضع في القاموس؛ أما التضمين فهو متجه عددي متعلّم. |
-| **Attention and Q/K/V** — Trace a small attention computation: queries compare with keys, and the resulting weights combine values. Check tensor shapes and masks. | **الانتباه وQ/K/V** — نتتبع حسابًا صغيرًا: تقارن الاستعلامات بالمفاتيح، وتستخدم الأوزان الناتجة لدمج القيم. نفحص أبعاد المصفوفات وأقنعة الانتباه. |
-| **Transformer encoder** — Connect multi-head attention, residual paths, normalisation and feed-forward layers; inspect a real forward pass and explain the limits of attention visualisation. | **مشفر المحوّل** — نربط الانتباه متعدد الرؤوس بالمسارات المتبقية والتطبيع والطبقات الأمامية، ونفحص تمريرًا فعليًا مع توضيح حدود تفسير خرائط الانتباه. |
+| **Pretraining and task heads** — Reuse a pretrained encoder and understand what changes during fine-tuning. Record whether the encoder is frozen in the CPU path. | **التدريب المسبق ورؤوس المهام** — نعيد استخدام مشفر مدرب مسبقًا ونفهم ما يتغير في الضبط الدقيق، ونسجل بصراحة هل جُمّد المشفر عند استخدام بديل CPU. |
+| **Baseline and honest splits** — Create a TF-IDF baseline, keep groups separate across train/validation/test, then evaluate topic and sentiment with independent label contracts. | **خط الأساس والتقسيم السليم** — نبني خط أساس TF-IDF ونمنع تداخل المجموعات بين التدريب والتحقق والاختبار، ثم نقيس الموضوع والمشاعر بعقدي وسوم مستقلين. |
+| **NER and label alignment** — Use BIO labels, align word labels to subwords and exclude special or ignored tokens from the loss as documented. Evaluate complete entities. | **الكيانات ومحاذاة الوسوم** — نستخدم وسوم BIO ونحاذي وسوم الكلمات مع الوحدات الجزئية ونستبعد الرموز الخاصة أو المهملة من حساب الخسارة وفق الدرس. نقيم الكيان كاملًا. |
+| **Extractive QA and no-answer** — Select an answer span from the supplied context. When the context does not support an answer, return no-answer instead of generating text. | **الأسئلة الاستخراجية وعدم وجود إجابة** — نختار مقطع إجابة من السياق المقدم. عندما لا يدعم السياق الإجابة نعيد عدم وجود إجابة، ولا نولّد نصًا من خارج المصدر. |
+| **Arabic model choice** — Compare Arabic and multilingual checkpoint assumptions, tokenizer compatibility and sample coverage; justify the choice with evidence. | **اختيار النموذج للعربية** — نقارن افتراضات النماذج العربية ومتعددة اللغات وتوافق المرمّز وتغطية العينة، ثم نبرر الاختيار بالدليل لا بالاسم الأشهر. |
 
-**Architecture:** Synthetic AR/EN text → Privacy + profile → Tokens → vectors → Encoder + attention checks
+**Architecture:** Protected, grouped data → Baseline + encoder → Topic / sentiment / NER / QA → Task metrics + Gate B
 
-**المسار المعماري:** نص عربي/إنجليزي اصطناعي ← حماية + معالجة موثقة ← رموز ← تمثيل عددي ← مشفر + فحوص الانتباه
+**المسار المعماري:** بيانات محمية ومقسمة ← خط أساس + مشفر ← موضوع / مشاعر / كيانات / أسئلة ← مقاييس المهام + بوابة B
 
-**الدليل:** اختبارات المعالجة + قرار الترميز + فحوص الانتباه + commit
+**الدليل:** خط أساس + عدم تداخل المجموعات + أدلة التصنيف والكيانات والأسئلة + commit
 
 [المشروع وهيكله](../docs/project-walkthrough.md) · [التشغيل والحفظ خطوة بخطوة](../docs/learner-workflow.md) · [تقييم 100 درجة](../docs/policies/assessment-and-completion.md)
 
-## دفاتر اليوم | Notebooks
+## خط الأنابيب الذي سنبنيه
 
-| الدفتر | الغرض | التكلفة |
-|---|---|---|
-| [01 — Text Processing & Tokenisation](../notebooks/01_text_processing_tokenization.ipynb) | Unicode، masking، profiles، spaCy، WordPiece، fertility، embeddings | مجاني، CPU |
-| [02 — Attention & Transformers](../notebooks/02_attention_transformers.ipynb) | Q/K/V، scaling، masks، multi-head، تدقيق معاملات وforward فعلي | مجاني، CPU |
+```mermaid
+flowchart TD
+    A["بيانات محمية ومقسمة"] --> B["Baseline"]
+    B --> C["Encoder مدرّب مسبقًا"]
+    C --> D["Classification head"]
+    C --> E["NER head"]
+    C --> F["QA span heads"]
+```
 
-## مستويات اليوم
+المشفر العام نقطة بداية مشتركة، لكن كل مهمة لها شكل labels وloss وmetric مختلف.
 
-### 🟢 Core — للجميع
+## المسارات
 
-- تشغيل الدفترين بالترتيب.
-- نجاح اختبارات preprocessing وattention.
-- مقارنة العربية والإنجليزية في fertility.
-- كتابة قرار tokenizer من 4 أسطر.
-- commit بوابة اليوم.
+- 🟢 **Core:** البيانات المصغرة + خطوة تدريب فعلية + اختبارات الصحة. إلزامي.
+- 🔵 **Explore:** epoch إضافي أو مقارنة frozen encoder مع full fine-tuning.
+- 🟣 **Distinction:** ثلاث بذور أو تحليل per-language، بعد Core فقط.
 
-### 🔵 Explore
+## الموارد والتكلفة
 
-- قارن profile عربيين وسجّل ما تغير في token count.
-- قس truncation rate عند طولين.
-- غيّر keep mask وفسّر النتيجة.
+المسار الإلزامي مجاني ولا يحتاج API key:
 
-### 🟣 Distinction
+- Google Colab Free؛ GPU غير مضمون.
+- نموذج Hugging Face عام بترخيص Apache-2.0.
+- GitHub Public.
+- Python وPyTorch وTransformers وscikit-learn مفتوحة المصدر.
 
-- أضف slice للهجة أو Arabizi دون تغيير النص الأصلي.
-- قارن tokenizer إضافيًا موثقًا مع المعيار نفسه.
-- تحقق عدديًا من PyTorch SDPA على أكثر من seed.
+Colab Pro أو خدمات الاستدلال المستضافة خيارات مدفوعة قد توفر موارد أو استضافة، لكنها ليست مطلوبة ولا تمنح نقاطًا إضافية. إذا لم يتوفر GPU، يجمد notebook المشفر ويدرب task head على CPU لتقليل الوقت، مع تسجيل ذلك بوضوح.
 
-## قواعد اليوم
+## قاعدة الصدق العلمي
 
-- لا تنظف النص قبل أن تحفظ نسخة عرض آمنة.
-- لا تستخدم normalization لأن شكل النص “أجمل”.
-- لا تفصل tokenizer عن checkpoint الذي ينتمي إليه.
-- لا تعامل token ID كأنه معنى؛ المعنى المتعلم في embedding/model.
-- لا تعرض attention heatmap كبرهان سببي على تفسير القرار.
-- لا تنتقل إلى Explore قبل نجاح Core.
+العينات صغيرة ومصطنعة. أي نتيجة منها تسمى:
 
-## نقطة البداية
+`MEASURED_SMOKE`
 
-1. شغّل [Runtime Doctor](../notebooks/00_runtime_doctor.ipynb).
-2. افتح الدفتر 01 واحفظ نسخة في Drive.
-3. أبقِ هذه الصفحة في تبويب منفصل للعودة إلى التعريفات.
-4. عند ظهور خطأ استخدم [دليل الأعطال](../docs/setup/troubleshooting.md).
+ولا تسمى «دقة النموذج النهائية». الغرض إثبات سلامة المسار، لا إثبات جاهزية إنتاجية.
 
-## قاموس اليوم
+## مخرج بيان اليوم
 
-[افتح قاموس اليوم الأول](GLOSSARY.md) واتركه في تبويب مستقل أثناء الشرح والمختبر. يضم المصطلح الإنجليزي، والنطق، والتعريف بالإنجليزية، والشرح العربي، ومثالًا تطبيقيًا لكل مفهوم في المعالجة وTokenisation وAttention وTransformers. يبقى [قاموس الدورة الكامل](../docs/glossary/README.md) مرجعًا جامعًا عبر الأيام الأربعة.
+عند Gate B يملك كل متدرب:
 
-## مراجع اليوم
-
-جميع الادعاءات التقنية مرتبطة بمصادرها الأولية في [REFERENCES.md](REFERENCES.md).
+- baseline موثق.
+- zero group overlap.
+- classification training smoke.
+- عقد labels للموضوع والمشاعر؛ `sentiment` موجود في بيانات اليوم ويُدرّب كرأس مستقل في تجميع المشروع.
+- NER alignment tests.
+- NER training smoke.
+- QA training smoke + valid span + honest null.
+- قرار أولي بين نموذج متعدد اللغات ونموذج عربي.
+- commit عام واحد يربط الأدلة.

@@ -1,37 +1,32 @@
-# مراجع اليوم الأول | Day 1 References
+# مراجع اليوم الثاني
+# Day 2 References
 
-**آخر تحقق | Last verified:** 27 August 2026
+استخدمت المصادر الأولية والرسمية التالية. تاريخ المراجعة: 27 أغسطس 2026.
 
-## النص وUnicode
+## Hugging Face Transformers
 
-- [Unicode Standard Annex #15 — Normalization Forms](https://unicode.org/reports/tr15/)
-- [Python `unicodedata`](https://docs.python.org/3/library/unicodedata.html)
-- [Python Unicode HOWTO](https://docs.python.org/3/howto/unicode.html)
+- [Text classification task guide](https://huggingface.co/docs/transformers/tasks/sequence_classification)
+- [Token classification / NER task guide](https://huggingface.co/docs/transformers/tasks/token_classification)
+- [Extractive question answering task guide](https://huggingface.co/docs/transformers/tasks/question_answering)
+- [Tokenizer API and fast-tokenizer capabilities](https://huggingface.co/docs/transformers/main_classes/tokenizer)
+- [DistilBERT multilingual cased model card](https://huggingface.co/distilbert/distilbert-base-multilingual-cased)
 
-## Tokenisation
+## Arabic model cards
 
-- [Hugging Face Tokenizer API](https://huggingface.co/docs/transformers/main_classes/tokenizer)
-- [Hugging Face fast tokenizer guide](https://huggingface.co/docs/transformers/fast_tokenizers)
-- [mBERT model card](https://huggingface.co/google-bert/bert-base-multilingual-cased)
-- [Transformers 5.15.1 on PyPI](https://pypi.org/project/transformers/5.15.1/)
-- [Tokenizers 0.22.2 on PyPI](https://pypi.org/project/tokenizers/0.22.2/)
+- [CAMeLBERT Mix](https://huggingface.co/CAMeL-Lab/bert-base-arabic-camelbert-mix)
+- [CAMeLBERT Mix NER](https://huggingface.co/CAMeL-Lab/bert-base-arabic-camelbert-mix-ner)
+- [AraBERT v02](https://huggingface.co/aubmindlab/bert-base-arabertv02)
 
-## Attention وTransformers
+## Metrics and splitting
 
-- Vaswani et al. (2017), [Attention Is All You Need — NeurIPS](https://papers.nips.cc/paper/7181-attention-is-all-you-need)
-- [PyTorch scaled_dot_product_attention](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html)
-- [PyTorch MultiheadAttention](https://docs.pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html)
-- Devlin et al. (2018), [BERT](https://arxiv.org/abs/1810.04805)
-- Jain & Wallace (2019), [Attention is not Explanation — ACL Anthology](https://aclanthology.org/N19-1357/)
+- [scikit-learn F1 score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html)
+- [scikit-learn GroupShuffleSplit](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupShuffleSplit.html)
+- [seqeval project page](https://pypi.org/project/seqeval/)
 
-## بيئة التنفيذ
+## Package versions used
 
-- [Google Colab Runtime Versions](https://research.google.com/colaboratory/runtime-version-faq.html)
-- [Google Colab FAQ](https://research.google.com/colaboratory/faq.html)
+- [Transformers 5.15.1](https://pypi.org/project/transformers/5.15.1/)
+- [Tokenizers 0.22.2](https://pypi.org/project/tokenizers/0.22.2/)
+- [scikit-learn 1.9.0](https://pypi.org/project/scikit-learn/1.9.0/)
 
-## قاعدة الاستخدام
-
-- `REFERENCE`: من مصدر أعلاه.
-- `MEASURED`: شغّلته وسجلت البيئة.
-- `TARGET`: بوابة تعليمية.
-- `EXAMPLE`: توضيح لا يثبت أداء.
+الروابط المدفوعة أو الاستضافات الخارجية ليست جزءًا من متطلبات الاجتياز.
