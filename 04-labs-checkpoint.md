@@ -1,136 +1,166 @@
-# 4. المختبران وبوابة بيان A  
-# Labs and Bayan Gate A
+# 4. مختبرات اليوم الثالث وبوابة Gate C
+# Day 3 Labs and Gate C
 
-## قبل المختبر
+## الملفات | Files
 
-- [ ] `BAYAN_ENV_READY = True`.
-- [ ] حفظت نسخة notebook في Drive.
-- [ ] مستودعك العام مفتوح.
-- [ ] بدأت 🟢 Core.
-- [ ] لن تضع أوزان نموذج أو بيانات حساسة في GitHub.
+1. [05 — Arabic NLP](../notebooks/05_arabic_nlp.ipynb)
+2. [06 — Semantic Search](../notebooks/06_semantic_search.ipynb)
+3. [07 — Evaluation and Error Analysis](../notebooks/07_evaluation_error_analysis.ipynb)
+4. [عينة العربية](../data/sample/bayan_day3_arabic.csv)
+5. [حالات البحث](../data/sample/bayan_day3_cases.csv)
+6. [استعلامات التقييم](../data/sample/bayan_day3_queries.jsonl)
+7. [تنبؤات COURSE_FIXTURE](../data/sample/bayan_day3_predictions.csv)
 
-## Lab 1 — Text Processing & Tokenisation
+## Lab 4 — العربية
 
-افتح:
+يلزم:
 
-[01_text_processing_tokenization.ipynb](../notebooks/01_text_processing_tokenization.ipynb)
+- تشغيل CAMeL Tools 1.6.0 في Core.
+- حفظ display copy دون تغيير.
+- إنتاج model copy بـprofile معروفة.
+- نجاح golden cases للتشكيل والألف والياء المقصورة والتطويل.
+- تسجيل توزيع `variant` وشرح لماذا لا يمثل dialect prediction.
+- توثيق Arabizi كمسار يحتاج تقييمًا مستقلًا.
+- تدريب مقارنة مصغرة بين النموذج متعدد اللغات وCAMeLBERT-DA على نفس split والبذرة.
+- قياس Gulf slice المجمدة، ووصف النتيجة `MEASURED_SMOKE` لا ادعاء أداء إنتاجي.
 
-### المطلوب
+النجاح داخل الدفتر:
 
-1. افحص Unicode لنص عربي.
-2. أنشئ `display_text` و`model_text`.
-3. اخفِ email/phone التعليميين.
-4. قسّم نسخة النموذج المحمية إلى جمل باستخدام spaCy، واختبر حالة اختصار معروفة.
-5. شغّل profile محافظًا.
-6. قارن offline WordPiece وmBERT tokenizer إن توفر الاتصال.
-7. قس fertility للعربية والإنجليزية.
-8. قس truncation rate لطولين.
-9. اربط IDs بembedding matrix صغيرة.
-10. اكتب قرار tokenizer.
+`DAY3_NOTEBOOK5_CORE=PASS`
 
-### اختبارات النجاح
+Commit:
 
-```bash
-PYTHONPATH=src pytest -q   tests/test_day1_preprocessing.py   tests/test_day1_tokenization.py
+`feat: add Arabic NLP profiles and tests`
+
+## Lab 5 — البحث الدلالي
+
+يلزم:
+
+- تحميل sentence-transformer متعدد اللغات من المصدر الرسمي.
+- إنشاء embeddings فعلية، لا vectors مزروعة.
+- التأكد من L2 norm على corpus وquery.
+- بناء `FAISS IndexFlatIP` بعدد السجلات الصحيح.
+- تشغيل monolingual وcross-lingual queries.
+- حساب Recall@3 وMRR@3 بوصف `MEASURED_SMOKE`.
+- إعادة ترتيب المرشحين فقط باستخدام cross-encoder متعدد اللغات.
+- قياس MRR@3 قبل/بعد ووقت مرحلة re-ranking بعد warm-up؛ وقبولها أو رفضها بالدليل.
+- ضبط threshold على validation فقط، ثم قياس test.
+- حفظ manifest وmetrics؛ لا تحفظ weights أو cache في GitHub.
+
+النجاح داخل الدفتر:
+
+`DAY3_NOTEBOOK6_CORE=PASS`
+
+Commit:
+
+`feat: build bilingual semantic search`
+
+## Lab 6 — التقييم وتحليل الأخطاء
+
+يلزم:
+
+- وصف `bayan_day3_predictions.csv` بأنه `COURSE_FIXTURE`.
+- حساب Macro-F1 مع 95% bootstrap CI.
+- paired comparison لـA وB وعدم ادعاء فرق إذا شملت CI الصفر.
+- شرائح language وvariant وlength مع `SMALL_SLICE` حيث يلزم.
+- حساب behavioural pass rate على أمثلة معلومة العقد.
+- قراءة أخطاء validation ووضع taxonomy يدوية لعينة مختارة.
+- كتابة ثلاثة إصلاحات مرتبة بدليل، لا عبارات عامة.
+
+النجاح داخل الدفتر:
+
+`DAY3_NOTEBOOK7_CORE=PASS`
+
+Commit:
+
+`docs: add evaluation and error analysis`
+
+## Gate C — Search & Truth
+
+حدّث مشروعك بهذه الملفات أو ما يعادلها:
+
+```text
+notebooks/05_arabic_nlp.ipynb
+notebooks/06_semantic_search.ipynb
+notebooks/07_evaluation_error_analysis.ipynb
+src/bayan/arabic_profiles.py
+src/bayan/retrieval.py
+src/bayan/eval_stats.py
+src/bayan/error_analysis.py
+EVALUATION_REPORT.md
+MODEL_CARD.md
+DECISIONS.md
+PROGRESS.md
+reports/search_manifest.json
+reports/retrieval_metrics.json
 ```
 
-الهدف `TARGET`: جميع الاختبارات خضراء.
+استخدم [قالب تقرير التقييم](../templates/EVALUATION_REPORT_TEMPLATE.md) و[قالب بطاقة النموذج](../templates/MODEL_CARD_TEMPLATE.md)، ثم استبدل جميع placeholders بقيمك.
 
-### قرار tokenizer
+## ما يضاف إلى DECISIONS.md
 
-اكتب في `DECISIONS.md`:
+### Arabic profile
 
-```markdown
-## Day 1 — Tokenizer decision
+- profile + version + backend.
+- ما الذي تغير وما الذي حُفظ؟
+- لماذا لا تستخدم profile واحدة لكل checkpoints؟
 
-Checkpoint/tokenizer:
-Corpus slice:
-Arabic fertility [MEASURED]:
-English fertility [MEASURED]:
-Truncation rate at max_length=... [MEASURED]:
-Known limitation:
-Decision and reason:
-```
+### Semantic search
 
-## Lab 2 — Attention & Transformers
+- embedding model + model card + license.
+- index type ولماذا Flat مناسب للحجم الحالي.
+- k وthreshold ومكان ضبطهما.
+- Recall/MRR والشرائح بوصف `MEASURED_SMOKE`.
 
-افتح:
+### Evaluation
 
-[02_attention_transformers.ipynb](../notebooks/02_attention_transformers.ipynb)
+- headline metric لكل مهمة.
+- slices المختارة والسبب.
+- CI verdict بلغة مهنية.
+- top-3 fixes من الأخطاء.
 
-### المطلوب
+## شروط عبور Gate C
 
-1. نفذ/شغّل scaled attention.
-2. تحقق أن كل صف weights مجموعه 1.
-3. طبق keep mask.
-4. قارن NumPy وPyTorch SDPA إذا توفر PyTorch.
-5. تتبع shapes في multi-head split/combine.
-6. مرر tensor عبر EncoderLayer على CPU.
-7. نفّذ تدقيق معاملات معماريًا على checkpointين من عائلة BERT، واشرح أثر حجم vocabulary.
-8. نفّذ forward pass فعليًا على جملة عربية وأخرى إنجليزية.
-9. اعرض رأس attention واحدًا مع أسماء tokens.
-10. اشرح attention matrix دون ادعاء سببي.
+- [ ] دفاتر 05 و06 و07 موجودة بالأسماء المطلوبة.
+- [ ] علامات Core الثلاث ظاهرة بعد Run all.
+- [ ] اختبارات المصدر خضراء.
+- [ ] CAMeL Tools مستخدمة في موضع مفيد، وليست اسمًا في README فقط.
+- [ ] مقارنة CAMeLBERT-DA والنموذج متعدد اللغات منفذة على split واحد، والحدود موثقة.
+- [ ] corpus وquery vectors مطبعة L2.
+- [ ] FAISS manifest يطابق عدد vectors وبعدها.
+- [ ] Recall@k وMRR@k مقاسان على relevance labels.
+- [ ] cross-encoder يعيد ترتيب top candidates فقط، وفرق MRR وزمنه مقاسان.
+- [ ] no-answer threshold لم يضبط على test.
+- [ ] slices وCIs ظاهرة مع تحذير الحجم.
+- [ ] error analysis على validation لا frozen test.
+- [ ] النتائج موسومة `MEASURED_SMOKE` أو `COURSE_FIXTURE` بدقة.
+- [ ] لا weights أو cache أو PII أو أسرار في GitHub.
+- [ ] commits عامة وروابطها في `PROGRESS.md`.
 
-### اختبار النجاح
+## نقطة استعادة الطوارئ
 
-```bash
-PYTHONPATH=src pytest -q tests/test_day1_attention.py
-```
+| المشكلة | الإجراء الأول | البديل الآمن |
+|---|---|---|
+| فشل CAMeL Tools install | Runtime جديد وشغّل setup وحدها | أكمل الشرح؛ لا تعتبر stdlib بديل Gate C |
+| تنزيل sentence model بطيء | محاولة واحدة ثم افحص الاتصال | انتقل إلى Notebook 07 وارجع للبحث لاحقًا |
+| FAISS import fail | أعد تشغيل runtime بعد pip | استخدم exact NumPy oracle للتشخيص فقط، لا Gate PASS |
+| لا GPU | لا تغيّر شيئًا | نموذج البحث يعمل على CPU |
+| OOM | أغلِق نموذج اليوم الثاني وruntime قديم | batch أصغر؛ corpus اليوم 24 فقط |
+| cross-encoder بطيء | استخدم عدد المرشحين المصغر المثبت في الدفتر وانتظر القياس مرة واحدة | اعرض النتائج المحفوظة؛ لا تشغله على corpus كامل ولا تحذف مرحلة القياس |
+| CI واسعة | لا تزد n_boot لإخفائها | وثق محدودية العينة واجمع بيانات أكثر |
+| تأخر الصف 15 دقيقة | أوقف Explore/Distinction | حافظ على الدفاتر الثلاث وGate C |
 
-## بوابة بيان A | Gate A
+## Exit ticket
 
-لا تنتقل إلى اليوم الثاني قبل تحققها:
+أجب دون كود:
 
-| الدليل | شرط القبول |
-|---|---|
-| `src/bayan/preprocessing.py` | يستخدم عقد النسختين وprofile معلن |
-| preprocessing tests | خضراء |
-| attention tests | خضراء |
-| notebook 01 | يعمل بالترتيب؛ spaCy وقياسات الترميز ونتائجه موسومة |
-| notebook 02 | يعمل بالترتيب؛ تدقيق checkpointين وforward فعلي وخريطة attention ظاهرة |
-| `DECISIONS.md#day-1-tokenizer-decision` | يحتوي قياسات وحدًا معروفًا |
-| `PROGRESS.md` | Day 1 = complete |
-| الخصوصية | لا raw PII ولا secret |
-| commit | موجود برسالة واضحة |
+1. لماذا نحفظ display copy مستقلة؟
+2. لماذا يجب تطبيع corpus وquery معًا؟
+3. ما الفرق بين Recall@k وMRR@k؟
+4. ماذا يعني أن CI للفرق تشمل الصفر؟
+5. لماذا نجري error analysis على validation؟
+6. ما الذي يجبرك على إعادة بناء FAISS index؟
 
-### Commit المقترح
+## التالي
 
-`feat: complete day 1 preprocessing tokenization and attention`
-
-## فحص الفهم | Exit ticket
-
-أجب دون تشغيل الكود:
-
-1. لماذا لا يكفي `text.split()` لنموذج BERT؟
-2. لماذا يجب أن يأتي tokenizer والنموذج من checkpoint واحد؟
-3. اذكر تحويلًا عربيًا قد يزيل معلومة.
-4. ماذا تقيس fertility؟ وماذا لا تثبت؟
-5. ما الفرق بين token ID وembedding؟
-6. ما shape مصفوفة attention لتسلسل طوله (n) في head واحد؟
-7. لماذا نقسم scores على (sqrt{d_k})؟
-8. لماذا لا نعرض attention weights كتفسير سببي تلقائي؟
-
-## إذا انتهيت مبكرًا
-
-### 🔵 Explore
-
-- قارن profile محافظًا وآخر يزيل التشكيل.
-- اكتب جدول الفرق في tokens/fertility.
-- لا تعلن فائزًا بلا metric للمهمة.
-
-### 🟣 Distinction
-
-- أضف test للـclitic `وبالخدمة`.
-- قارن mask semantics في NumPy وPyTorch.
-- نفذ repeated run بثلاث بذور لembedding toy واكتب ما يتغير وما لا.
-
-## نقطة الاستعادة
-
-قبل إغلاق Colab:
-
-1. Save a copy in Drive.
-2. احفظ التقرير الصغير.
-3. Save a copy in GitHub.
-4. افتح الملف من GitHub وتأكد أنه موجود.
-5. حدّث `PROGRESS.md`.
-6. انسخ رابط commit في ملاحظاتك.
+انتقل إلى [اليوم الرابع](../day-04/README.md): سنقيس latency والذاكرة، نقارن baseline وoptimized، نبني خدمة محلية مختبرة، ثم نجمع مشروع بيان ونجهزه للتسليم النهائي.
